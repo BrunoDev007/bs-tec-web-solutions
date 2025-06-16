@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Monitor } from 'lucide-react';
-import SearchDialog from './SearchDialog';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -44,12 +43,10 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <SearchDialog />
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <SearchDialog />
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-300 hover:text-white p-2"
