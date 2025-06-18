@@ -72,7 +72,7 @@ const Support = () => {
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2" />
-                    <span>Sábados: 8h às 14h</span>
+                    <span>Sábados: 8h às 12h</span>
                   </div>
                 </div>
               </div>
@@ -80,7 +80,7 @@ const Support = () => {
               <div className="bg-blue-50 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-800">
                   <strong>Taxa de deslocamento:</strong> Consulte valores baseados na sua localização. 
-                  Atendemos toda a Grande São Paulo.
+                  Atendemos Serrinha e região.
                 </p>
               </div>
 
@@ -123,7 +123,7 @@ const Support = () => {
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-2" />
-                    <span>7 dias por semana</span>
+                    <span>6 dias por semana</span>
                   </div>
                   <div className="flex items-center">
                     <Phone className="h-4 w-4 mr-2" />
@@ -228,7 +228,7 @@ const Support = () => {
               Entrar em Contato
             </a>
             <a
-              href="tel:+5511999999999"
+              href="tel:+5575999823459"
               className="border border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 rounded-lg font-semibold transition-colors"
             >
               Ligar Agora
