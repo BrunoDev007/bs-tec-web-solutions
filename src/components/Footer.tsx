@@ -4,13 +4,13 @@ import { Monitor, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-900 text-white">
+    <footer className="bg-slate-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Monitor className="h-8 w-8 text-blue-400" />
+              <Monitor className="h-8 w-8 text-primary" />
               <span className="text-xl font-bold">BS Suporte Tec</span>
             </div>
             <p className="text-gray-300 mb-4">
@@ -24,15 +24,15 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Contato</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-blue-400" />
+                <Mail className="h-4 w-4 text-primary" />
                 <span className="text-gray-300">bs.suporte.tec@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-blue-400" />
+                <Phone className="h-4 w-4 text-primary" />
                 <span className="text-gray-300">(75) 99982-3459</span>
               </div>
               <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-blue-400" />
+                <MapPin className="h-4 w-4 text-primary" />
                 <span className="text-gray-300">Serrinha, BA</span>
               </div>
             </div>
@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-8 pt-8 text-center">
+        <div className="border-t border-slate-700 mt-8 pt-8 text-center">
           <p className="text-gray-400">
             © 2024 BS Suporte Tec. Todos os direitos reservados.
           </p>

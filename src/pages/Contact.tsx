@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -130,7 +129,7 @@ ${formData.mensagem}
   return (
     <div className="min-h-screen pt-16">
       {/* Header */}
-      <section className="bg-slate-900 text-white py-16">
+      <section className="bg-slate-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Entre em Contato
@@ -163,7 +162,7 @@ ${formData.mensagem}
                       name="nome"
                       value={formData.nome}
                       onChange={handleChange}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                         errors.nome ? 'border-red-500' : 'border-gray-300'
                       }`}
                     />
@@ -180,7 +179,7 @@ ${formData.mensagem}
                       name="sobrenome"
                       value={formData.sobrenome}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -195,7 +194,7 @@ ${formData.mensagem}
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                       errors.email ? 'border-red-500' : 'border-gray-300'
                     }`}
                   />
@@ -212,7 +211,7 @@ ${formData.mensagem}
                     name="telefone"
                     value={formData.telefone}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                       errors.telefone ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="(11) 99999-9999"
@@ -229,7 +228,7 @@ ${formData.mensagem}
                     name="motivo"
                     value={formData.motivo}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                       errors.motivo ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -255,7 +254,7 @@ ${formData.mensagem}
                     value={formData.mensagem}
                     onChange={handleChange}
                     maxLength={600}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                       errors.mensagem ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="Descreva sua necessidade ou dúvida..."
@@ -270,7 +269,7 @@ ${formData.mensagem}
 
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-semibold transition-colors flex items-center justify-center"
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-3 px-6 rounded-md font-semibold transition-colors flex items-center justify-center"
                 >
                   <Send className="h-5 w-5 mr-2" />
                   Enviar Mensagem
@@ -294,8 +293,8 @@ ${formData.mensagem}
                 <div className="space-y-6">
                   {contactInfo.map((item, index) => (
                     <div key={index} className="flex items-center">
-                      <div className="bg-blue-100 rounded-full p-3 mr-4">
-                        <div className="text-blue-600">
+                      <div className="bg-primary/10 rounded-full p-3 mr-4">
+                        <div className="text-primary">
                           {item.icon}
                         </div>
                       </div>
@@ -308,7 +307,7 @@ ${formData.mensagem}
                 </div>
               </div>
 
-              <div className="bg-blue-600 rounded-lg shadow-lg p-8 text-white">
+              <div className="bg-secondary rounded-lg shadow-lg p-8 text-white">
                 <h3 className="text-xl font-bold mb-4">
                   Atendimento Rápido
                 </h3>
@@ -318,7 +317,7 @@ ${formData.mensagem}
                 </p>
                 <a
                   href="tel:+5575999823459"
-                  className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-2 rounded-md font-semibold transition-colors inline-block"
+                  className="bg-white text-secondary hover:bg-gray-100 px-6 py-2 rounded-md font-semibold transition-colors inline-block"
                 >
                   Ligar Agora
                 </a>
