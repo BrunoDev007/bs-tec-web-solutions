@@ -29,11 +29,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-blue-400" />
-                <span className="text-gray-300">(11) 99999-9999</span>
+                <span className="text-gray-300">(75) 99982-3459</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 text-blue-400" />
-                <span className="text-gray-300">São Paulo, SP</span>
+                <span className="text-gray-300">Serrinha, BA</span>
               </div>
             </div>
           </div>
