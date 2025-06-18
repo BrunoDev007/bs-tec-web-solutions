@@ -113,17 +113,17 @@ ${formData.mensagem}
     {
       icon: <Phone className="h-6 w-6" />,
       title: 'Telefone',
-      info: '(11) 99999-9999'
+      info: '(75) 99982-3459'
     },
     {
       icon: <MapPin className="h-6 w-6" />,
       title: 'Localização',
-      info: 'São Paulo, SP'
+      info: 'Serrinha, BA'
     },
     {
       icon: <Clock className="h-6 w-6" />,
       title: 'Horário',
-      info: 'Seg-Sex: 8h-18h | Sáb: 8h-14h'
+      info: 'Seg-Sex: 8h-18h | Sáb: 8h-12h'
     }
   ];
 
