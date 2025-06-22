@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Monitor, Users, Award, Clock, Facebook, Instagram } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 const About = () => {
   const stats = [
@@ -29,8 +29,15 @@ const About = () => {
     }
   ];
 
+  const handleWhatsAppClick = () => {
+    const phoneNumber = '5575999823459'; // Número com código do país e DDD
+    const message = 'Olá! Vim através do site e gostaria de saber mais sobre os serviços da BS Suporte Tec.';
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
-    <div className="min-h-screen pt-16">
+    <div className="min-h-screen pt-16 relative">
       {/* Header */}
       <section className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -142,6 +149,15 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Floating Button */}
+      <button
+        onClick={handleWhatsAppClick}
+        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 hover:scale-110"
+        aria-label="Falar no WhatsApp"
+      >
+        <MessageCircle className="h-6 w-6" />
+      </button>
     </div>
   );
 };
