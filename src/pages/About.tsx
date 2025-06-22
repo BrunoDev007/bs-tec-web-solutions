@@ -1,6 +1,5 @@
 import React from 'react';
 import { Monitor, Users, Award, Clock, Facebook, Instagram } from 'lucide-react';
-import { MessageCircle } from 'lucide-react';
 
 const About = () => {
   const stats = [
@@ -37,7 +36,7 @@ const About = () => {
   };
 
   return (
-    <div className="min-h-screen pt-16 relative">
+    <div className="min-h-screen pt-16">
       {/* Header */}
       <section className="bg-slate-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -149,15 +148,6 @@ const About = () => {
           </div>
         </div>
       </section>
-
-      {/* WhatsApp Floating Button */}
-      <button
-        onClick={handleWhatsAppClick}
-        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50 hover:scale-110"
-        aria-label="Falar no WhatsApp"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </button>
     </div>
   );
 };
