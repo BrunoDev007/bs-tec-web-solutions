@@ -87,7 +87,7 @@ const Support = () => {
 
               <Link
                to="/contato" 
-               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
+               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors text-center block"
                >
                 Agendar Visita Presencial
               </Link>
