@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from "react-router-dom";
 import { Monitor, Wifi, MapPin, Clock, CheckCircle, Phone } from 'lucide-react';
 
 const Support = () => {
@@ -84,9 +85,12 @@ const Support = () => {
                 </p>
               </div>
 
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+              <Link
+               to="/contato" 
+               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
+               >
                 Agendar Visita Presencial
-              </button>
+              </Link>
             </div>
 
             {/* Remote Support */}
@@ -221,12 +225,12 @@ const Support = () => {
             Nossa equipe está pronta para ajudar você
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="#/contato"
+            <Link
+              to="/contato"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
             >
               Entrar em Contato
-            </a>
+            </Link>
             <a
               href="tel:+5575999823459"
               className="border border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 rounded-lg font-semibold transition-colors"
