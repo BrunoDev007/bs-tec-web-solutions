@@ -108,7 +108,8 @@ const Services = () => {
           <p className="text-xl text-blue-100 mb-8">
             Entre em contato conosco para um orçamento personalizado e sem compromisso
           </p>
-          {/*<div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/*
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/contato"
               className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-semibold transition-colors"
@@ -121,7 +122,7 @@ const Services = () => {
             >
               Ver Opções de Suporte
             </a>
-          </div>*/}
+          </div> */}
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
