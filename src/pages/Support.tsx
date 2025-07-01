@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from "react-router-dom";
-import { Monitor, Wifi, MapPin, Clock, CheckCircle, Phone } from 'lucide-react';
+import { Monitor, Wifi, MapPin, Clock, CheckCircle, Phone, } from 'lucide-react';
 
 const Support = () => {
   const presentialFeatures = [
@@ -84,12 +84,11 @@ const Support = () => {
                   Atendemos Serrinha e região.
                 </p>
               </div>
-
               <Link
-               to="/contato" 
-               className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors text-center block"
-               >
-                Agendar Visita Presencial
+                to="/contato"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors text-center block"
+              >
+                  Agendar Visita Presencial
               </Link>
             </div>
 
