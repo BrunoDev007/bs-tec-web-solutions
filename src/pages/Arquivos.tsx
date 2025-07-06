@@ -1,35 +1,74 @@
 
-import React, { useState } from 'react';
-import { FileText, Download, Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FileText, Download, Search, Plus, Edit, LogOut, Settings } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import LoginForm from '@/components/LoginForm';
+import FileForm from '@/components/FileForm';
+import UserManagement from '@/components/UserManagement';
+import { toast } from 'sonner';
 
-const Arquivos = () => {
+const ArquivosContent = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showFileForm, setShowFileForm] = useState(false);
+  const [showUserManagement, setShowUserManagement] = useState(false);
+  const [editingFile, setEditingFile] = useState(null);
+  
+  const { isAuthenticated, logout } = useAuth();
 
-  const thermalPrinterFiles = [
-    { name: 'Driver Epson TM-T20', size: '58.4 MB', type: 'ZIP', url: 'https://mega.nz/file/HUUARCwJ#VxyvGhHL6z5rDBPG7dcgxrQIE8xQa3I4NOA1UhDWegA' },
-    { name: 'Driver Epson TM-T20X', size: '2.5 MB', type: 'PDF', url: 'https://mega.nz/file/iVND1YaD#ut1bl9z0gQioChxxJyfdNSSuKa7FfEbto1Ps8dmXpZ4' },
-    { name: 'Driver Epson TM-T81-FBII', size: '598 KB', type: 'ZIP', url: 'https://mega.nz/file/DAkCVYKT#mefI5f3drtdqqUGTVhr0f9Oq9CR-NIEwrBM59u7OmnU' },
-    { name: 'Driver Bematech MP-4200 TH', size: '1.2 MB', type: 'ZIP', url: 'https://mega.nz/file/example1' },
-    { name: 'Driver Elgin i9', size: '3.1 MB', type: 'ZIP', url: 'https://mega.nz/file/example2' },
-  ];
+  const loadFiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('files')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  const multifunctionPrinterFiles = [
-    { name: 'Driver HP LaserJet Pro MFP M428', size: '125 MB', type: 'ZIP', url: 'https://mega.nz/file/example3' },
-    { name: 'Driver Canon PIXMA G3110', size: '89 MB', type: 'ZIP', url: 'https://mega.nz/file/example4' },
-    { name: 'Driver Epson EcoTank L3150', size: '156 MB', type: 'ZIP', url: 'https://mega.nz/file/example5' },
-    { name: 'Driver Brother DCP-L2540DW', size: '78 MB', type: 'ZIP', url: 'https://mega.nz/file/example6' },
-  ];
+      if (error) throw error;
+      setFiles(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar arquivos:', error);
+      toast.error('Erro ao carregar arquivos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filterFiles = (files) => {
-    return files.filter(file =>
+  useEffect(() => {
+    loadFiles();
+  }, []);
+
+  const thermalFiles = files.filter(file => file.category === 'thermal');
+  const multifunctionFiles = files.filter(file => file.category === 'multifunction');
+
+  const filterFiles = (filesList) => {
+    return filesList.filter(file =>
       file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       file.type.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
-  const filteredThermalFiles = filterFiles(thermalPrinterFiles);
-  const filteredMultifunctionFiles = filterFiles(multifunctionPrinterFiles);
+  const filteredThermalFiles = filterFiles(thermalFiles);
+  const filteredMultifunctionFiles = filterFiles(multifunctionFiles);
+
+  const handleEditFile = (file) => {
+    setEditingFile(file);
+    setShowFileForm(true);
+  };
+
+  const handleAddFile = () => {
+    setEditingFile(null);
+    setShowFileForm(true);
+  };
+
+  const handleFormSuccess = () => {
+    loadFiles();
+  };
 
   const FilesList = ({ files, title }) => (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -42,7 +81,7 @@ const Arquivos = () => {
       <div className="divide-y divide-gray-200">
         {files.length > 0 ? (
           files.map((file, index) => (
-            <div key={index} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+            <div key={file.id || index} className="px-6 py-4 hover:bg-gray-50 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
@@ -51,13 +90,23 @@ const Arquivos = () => {
                   <div>
                     <h4 className="text-sm font-medium text-gray-900">{file.name}</h4>
                     <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                      <span>{file.size}</span>
-                      <span>•</span>
+                      {file.size && <span>{file.size}</span>}
+                      {file.size && <span>•</span>}
                       <span>{file.type}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
+                  {isAuthenticated && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditFile(file)}
+                      className="text-gray-600 hover:text-blue-600"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
                   <a
                     href={file.url}
                     download
@@ -75,25 +124,70 @@ const Arquivos = () => {
         ) : (
           <div className="px-6 py-8 text-center text-gray-500">
             <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>Nenhum arquivo encontrado para "{searchTerm}"</p>
+            <p>Nenhum arquivo encontrado{searchTerm && ` para "${searchTerm}"`}</p>
           </div>
         )}
       </div>
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-20 bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p>Carregando arquivos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pt-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Arquivos Técnicos
-            </h1>
-            <p className="text-gray-600">
-              Repositório de drivers e ferramentas técnicas organizados por categoria
-            </p>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Arquivos Técnicos
+              </h1>
+              <p className="text-gray-600">
+                Repositório de drivers e ferramentas técnicas organizados por categoria
+              </p>
+            </div>
+            
+            {/* Admin Controls */}
+            <div className="flex gap-2">
+              {isAuthenticated ? (
+                <>
+                  <Button onClick={handleAddFile} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Adicionar Arquivo
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowUserManagement(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Gerenciar Usuários
+                  </Button>
+                  <Button variant="outline" onClick={logout} className="flex items-center gap-2">
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowLogin(true)}
+                  className="text-sm"
+                >
+                  Login Admin
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Search Bar */}
@@ -130,8 +224,44 @@ const Arquivos = () => {
             />
           </TabsContent>
         </Tabs>
+
+        {/* Login Dialog */}
+        <Dialog open={showLogin} onOpenChange={setShowLogin}>
+          <DialogContent className="max-w-md">
+            <LoginForm onClose={() => setShowLogin(false)} />
+          </DialogContent>
+        </Dialog>
+
+        {/* File Form Dialog */}
+        <Dialog open={showFileForm} onOpenChange={setShowFileForm}>
+          <DialogContent className="max-w-md">
+            <FileForm 
+              file={editingFile}
+              onClose={() => setShowFileForm(false)}
+              onSuccess={handleFormSuccess}
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* User Management Dialog */}
+        <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+          <DialogContent className="max-w-2xl">
+            <UserManagement 
+              open={showUserManagement}
+              onClose={() => setShowUserManagement(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
+  );
+};
+
+const Arquivos = () => {
+  return (
+    <AuthProvider>
+      <ArquivosContent />
+    </AuthProvider>
   );
 };
 
