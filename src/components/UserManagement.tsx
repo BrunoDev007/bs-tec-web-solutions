@@ -178,7 +178,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
       // Verificar se usuário existe
       const { data: user, error } = await supabase
         .from('admin_users')
-        .select('username')
+        .select('id, username')
         .eq('username', recoveryUsername)
         .single();
 
