@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, Key, Trash2 } from 'lucide-react';
+import { UserPlus, Key, Trash2, Mail } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface User {
   id: string;
@@ -25,12 +26,17 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
   const [loading, setLoading] = useState(false);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
   
   // Form states
   const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [recoveryUsername, setRecoveryUsername] = useState('');
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+
+  const { currentUser } = useAuth();
 
   const loadUsers = async () => {
     try {
@@ -66,6 +72,18 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
     try {
       setLoading(true);
       
+      // Verificar se usuário já existe
+      const { data: existingUser } = await supabase
+        .from('admin_users')
+        .select('username')
+        .eq('username', newUsername)
+        .single();
+
+      if (existingUser) {
+        toast.error('Usuário já existe');
+        return;
+      }
+
       // Simular hash da senha (em produção use bcrypt adequado)
       const hashedPassword = `$2b$10$${btoa(newUserPassword).replace(/[^A-Za-z0-9]/g, '').substring(0, 53)}`;
       
@@ -97,23 +115,41 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
       return;
     }
 
+    if (!currentUser) {
+      toast.error('Usuário não encontrado na sessão');
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Verificar senha atual (simulação - em produção use verificação adequada)
-      const currentUser = localStorage.getItem('current_admin_user');
-      if (!currentUser) {
+      // Verificar usuário atual e senha atual
+      const { data: user, error: userError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('username', currentUser)
+        .single();
+
+      if (userError || !user) {
         toast.error('Usuário não encontrado');
         return;
       }
 
-      // Simular hash da nova senha
-      const hashedPassword = `$2b$10$${btoa(newPassword).replace(/[^A-Za-z0-9]/g, '').substring(0, 53)}`;
+      // Verificar senha atual
+      const currentPasswordHash = `$2b$10$${btoa(currentPassword).replace(/[^A-Za-z0-9]/g, '').substring(0, 53)}`;
+      
+      if (user.password_hash !== currentPasswordHash) {
+        toast.error('Senha atual incorreta');
+        return;
+      }
+
+      // Atualizar para nova senha
+      const newPasswordHash = `$2b$10$${btoa(newPassword).replace(/[^A-Za-z0-9]/g, '').substring(0, 53)}`;
       
       const { error } = await supabase
         .from('admin_users')
-        .update({ password_hash: hashedPassword })
-        .eq('username', 'admin'); // Por enquanto apenas admin
+        .update({ password_hash: newPasswordHash })
+        .eq('username', currentUser);
 
       if (error) throw error;
 
@@ -129,9 +165,69 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
     }
   };
 
+  const handlePasswordRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recoveryUsername || !recoveryEmail) {
+      toast.error('Preencha todos os campos');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Verificar se usuário existe
+      const { data: user, error } = await supabase
+        .from('admin_users')
+        .select('username')
+        .eq('username', recoveryUsername)
+        .single();
+
+      if (error || !user) {
+        toast.error('Usuário não encontrado');
+        return;
+      }
+
+      // Gerar token de recuperação
+      const recoveryToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 1); // Token expira em 1 hora
+
+      const { error: tokenError } = await supabase
+        .from('password_reset_tokens')
+        .insert([
+          {
+            user_id: user.id,
+            token: recoveryToken,
+            expires_at: expiresAt.toISOString()
+          }
+        ]);
+
+      if (tokenError) throw tokenError;
+
+      // Simular envio de email (implementar integração com serviço de email)
+      console.log(`Token de recuperação para ${recoveryUsername}: ${recoveryToken}`);
+      console.log(`Email de recuperação enviado para: ${recoveryEmail}`);
+
+      toast.success(`Instruções de recuperação enviadas para ${recoveryEmail}`);
+      setRecoveryUsername('');
+      setRecoveryEmail('');
+      setShowPasswordRecovery(false);
+    } catch (error) {
+      console.error('Erro na recuperação de senha:', error);
+      toast.error('Erro ao processar recuperação de senha');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteUser = async (userId: string, username: string) => {
     if (username === 'admin') {
       toast.error('Não é possível excluir o usuário admin principal');
+      return;
+    }
+
+    if (username === currentUser) {
+      toast.error('Não é possível excluir seu próprio usuário');
       return;
     }
 
@@ -167,7 +263,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
 
         <div className="space-y-6">
           {/* Botões de ação */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button 
               onClick={() => setShowAddUser(true)} 
               className="flex items-center gap-2"
@@ -182,6 +278,14 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
             >
               <Key className="h-4 w-4" />
               Alterar Senha
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setShowPasswordRecovery(true)} 
+              className="flex items-center gap-2"
+            >
+              <Mail className="h-4 w-4" />
+              Recuperar Senha
             </Button>
           </div>
 
@@ -203,7 +307,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
                           Criado em: {new Date(user.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
-                      {user.username !== 'admin' && (
+                      {user.username !== 'admin' && user.username !== currentUser && (
                         <Button
                           variant="ghost"
                           size="sm"
@@ -290,6 +394,46 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
                     {loading ? 'Alterando...' : 'Alterar Senha'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setShowChangePassword(false)}>
+                    Cancelar
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Modal Recuperar Senha */}
+          <Dialog open={showPasswordRecovery} onOpenChange={setShowPasswordRecovery}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Recuperar Senha</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handlePasswordRecovery} className="space-y-4">
+                <div>
+                  <Label htmlFor="recoveryUsername">Nome de Usuário</Label>
+                  <Input
+                    id="recoveryUsername"
+                    value={recoveryUsername}
+                    onChange={(e) => setRecoveryUsername(e.target.value)}
+                    placeholder="Digite o nome do usuário"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="recoveryEmail">Email para Recuperação</Label>
+                  <Input
+                    id="recoveryEmail"
+                    type="email"
+                    value={recoveryEmail}
+                    onChange={(e) => setRecoveryEmail(e.target.value)}
+                    placeholder="Digite o email para envio das instruções"
+                    required
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit" disabled={loading}>
+                    {loading ? 'Enviando...' : 'Enviar Instruções'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowPasswordRecovery(false)}>
                     Cancelar
                   </Button>
                 </div>

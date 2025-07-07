@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { FileText, Download, Search, Plus, Edit, LogOut, Settings } from 'lucide-react';
+import { FileText, Download, Search, Plus, Edit, LogOut, Settings, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -42,6 +42,27 @@ const ArquivosContent = () => {
   useEffect(() => {
     loadFiles();
   }, []);
+
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    if (!confirm(`Tem certeza que deseja excluir o arquivo "${fileName}"?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('files')
+        .delete()
+        .eq('id', fileId);
+
+      if (error) throw error;
+
+      toast.success('Arquivo excluído com sucesso!');
+      loadFiles(); // Recarregar lista de arquivos
+    } catch (error) {
+      console.error('Erro ao excluir arquivo:', error);
+      toast.error('Erro ao excluir arquivo');
+    }
+  };
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
   const multifunctionFiles = files.filter(file => file.category === 'multifunction');
@@ -98,14 +119,26 @@ const ArquivosContent = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   {isAuthenticated && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEditFile(file)}
-                      className="text-gray-600 hover:text-blue-600"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditFile(file)}
+                        className="text-gray-600 hover:text-blue-600"
+                        title="Editar arquivo"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFile(file.id, file.name)}
+                        className="text-gray-600 hover:text-red-600"
+                        title="Excluir arquivo"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
                   )}
                   <a
                     href={file.url}
