@@ -12,6 +12,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Função para gerar hash consistente da senha (mesma do UserManagement)
+const generatePasswordHash = (password: string): string => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password + 'salt_key_2024');
+  let hash = 0;
+  for (let i = 0; i < data.length; i++) {
+    hash = ((hash << 5) - hash + data[i]) & 0xffffffff;
+  }
+  return `$2b$10$${Math.abs(hash).toString(16).padStart(22, '0').substring(0, 22)}`;
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -51,23 +62,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       console.log('Usuário encontrado:', user.username);
 
-      // Para o usuário admin inicial, aceitar senha simples
-      if (username === 'admin' && password === 'admin123') {
-        localStorage.setItem('admin_session', 'true');
-        localStorage.setItem('current_admin_user', username);
-        setIsAuthenticated(true);
-        setCurrentUser(username);
-        return true;
-      }
+      // Verificar senha
+      let isPasswordCorrect = false;
 
-      // Verificar senha com hash simples para outros usuários
-      // Simular hash da senha (mesma lógica usada no cadastro)
-      const inputPasswordHash = `$2b$10$${btoa(password).replace(/[^A-Za-z0-9]/g, '').substring(0, 53)}`;
+      // Para o usuário admin inicial, verificar se ainda usa a senha padrão
+      if (username === 'admin' && password === 'admin123') {
+        const adminDefaultHash = '$2b$10$K7L/VBPz6.Zx.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6K';
+        isPasswordCorrect = user.password_hash === adminDefaultHash;
+      }
       
-      console.log('Hash gerado para verificação:', inputPasswordHash);
-      console.log('Hash armazenado:', user.password_hash);
+      // Se não for a senha padrão do admin, verificar com o hash gerado
+      if (!isPasswordCorrect) {
+        const inputPasswordHash = generatePasswordHash(password);
+        console.log('Hash gerado para verificação:', inputPasswordHash);
+        console.log('Hash armazenado:', user.password_hash);
+        isPasswordCorrect = user.password_hash === inputPasswordHash;
+      }
       
-      if (user.password_hash === inputPasswordHash) {
+      if (isPasswordCorrect) {
         localStorage.setItem('admin_session', 'true');
         localStorage.setItem('current_admin_user', username);
         setIsAuthenticated(true);
