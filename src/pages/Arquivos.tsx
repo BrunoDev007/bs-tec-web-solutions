@@ -17,7 +17,7 @@ const ArquivosContent = () => {
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, currentUser, logout } = useAuth();
   const { files, loading, loadFiles, handleDeleteFile, filterFiles } = useFileManagement();
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
@@ -58,6 +58,7 @@ const ArquivosContent = () => {
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           isAuthenticated={isAuthenticated}
+          currentUser={currentUser}
           onAddFile={handleAddFile}
           onUserManagement={() => setShowUserManagement(true)}
           onLogin={() => setShowLogin(true)}
@@ -112,15 +113,17 @@ const ArquivosContent = () => {
           </DialogContent>
         </Dialog>
 
-        {/* User Management Dialog */}
-        <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-          <DialogContent className="max-w-2xl">
-            <UserManagement 
-              open={showUserManagement}
-              onClose={() => setShowUserManagement(false)}
-            />
-          </DialogContent>
-        </Dialog>
+        {/* User Management Dialog - Apenas para admin */}
+        {currentUser === 'admin' && (
+          <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
+            <DialogContent className="max-w-2xl">
+              <UserManagement 
+                open={showUserManagement}
+                onClose={() => setShowUserManagement(false)}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </div>
   );

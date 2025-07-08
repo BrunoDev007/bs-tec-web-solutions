@@ -7,6 +7,7 @@ interface ArquivosHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   isAuthenticated: boolean;
+  currentUser: string | null;
   onAddFile: () => void;
   onUserManagement: () => void;
   onLogin: () => void;
@@ -17,6 +18,7 @@ const ArquivosHeader = ({
   searchTerm,
   onSearchChange,
   isAuthenticated,
+  currentUser,
   onAddFile,
   onUserManagement,
   onLogin,
@@ -42,14 +44,17 @@ const ArquivosHeader = ({
                 <Plus className="h-4 w-4" />
                 Adicionar Arquivo
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={onUserManagement}
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                Gerenciar Usuários
-              </Button>
+              {/* Apenas admin pode gerenciar usuários */}
+              {currentUser === 'admin' && (
+                <Button 
+                  variant="outline" 
+                  onClick={onUserManagement}
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  Gerenciar Usuários
+                </Button>
+              )}
               <Button variant="outline" onClick={onLogout} className="flex items-center gap-2">
                 <LogOut className="h-4 w-4" />
                 Sair
