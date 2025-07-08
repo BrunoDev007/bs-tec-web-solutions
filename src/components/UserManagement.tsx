@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,16 +21,14 @@ interface UserManagementProps {
   onClose: () => void;
 }
 
-// Função para gerar hash consistente da senha
+// Função para gerar hash consistente da senha (mesma do useAuth)
 const generatePasswordHash = (password: string): string => {
-  // Criar um hash mais robusto baseado na senha
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + 'salt_key_2024');
   let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    hash = ((hash << 5) - hash + data[i]) & 0xffffffff;
+  for (let i = 0; i < password.length; i++) {
+    const char = password.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
   }
-  // Converter para string hexadecimal e adicionar prefixo
   return `$2b$10$${Math.abs(hash).toString(16).padStart(22, '0').substring(0, 22)}`;
 };
 
@@ -99,8 +96,9 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
         return;
       }
 
-      // Gerar hash da senha usando a nova função
+      // Gerar hash da senha
       const hashedPassword = generatePasswordHash(newUserPassword);
+      console.log('Criando usuário com hash:', hashedPassword);
       
       const { error } = await supabase
         .from('admin_users')
@@ -147,20 +145,11 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
       }
 
       console.log('Usuário encontrado para alteração de senha:', user.username);
+      console.log('Hash atual armazenado:', user.password_hash);
 
       // Verificar senha atual
-      let currentPasswordHash;
-      if (selectedUserForPassword === 'admin' && currentPassword === 'admin123') {
-        // Para o admin com senha padrão, verificar se ainda usa a senha padrão
-        const adminDefaultHash = '$2b$10$K7L/VBPz6.Zx.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6KG.6K';
-        currentPasswordHash = adminDefaultHash;
-      } else {
-        // Gerar hash da senha atual digitada
-        currentPasswordHash = generatePasswordHash(currentPassword);
-      }
-      
-      console.log('Hash da senha atual:', currentPasswordHash);
-      console.log('Hash armazenado:', user.password_hash);
+      const currentPasswordHash = generatePasswordHash(currentPassword);
+      console.log('Hash da senha atual digitada:', currentPasswordHash);
       
       if (user.password_hash !== currentPasswordHash) {
         console.error('Senha atual incorreta');
@@ -170,7 +159,6 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
 
       // Gerar hash da nova senha
       const newPasswordHash = generatePasswordHash(newPassword);
-      
       console.log('Alterando senha para o hash:', newPasswordHash);
       
       const { error } = await supabase
