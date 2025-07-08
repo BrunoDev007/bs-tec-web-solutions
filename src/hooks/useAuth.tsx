@@ -1,6 +1,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { generatePasswordHash } from '@/utils/passwordUtils';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -11,17 +12,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Função simplificada para gerar hash da senha
-const generatePasswordHash = (password: string): string => {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return `$2b$10$${Math.abs(hash).toString(16).padStart(22, '0').substring(0, 22)}`;
-};
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -63,23 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('Usuário encontrado:', user.username);
       console.log('Hash armazenado:', user.password_hash);
 
-      // Verificar senha
-      let isPasswordCorrect = false;
-
-      // Para o admin com senha padrão
-      if (username === 'admin' && password === 'admin123') {
-        // Hash específico para admin123
-        const adminHash = generatePasswordHash('admin123');
-        console.log('Hash gerado para admin123:', adminHash);
-        isPasswordCorrect = user.password_hash === adminHash;
-      } else {
-        // Para outros usuários ou admin com senha alterada
-        const inputPasswordHash = generatePasswordHash(password);
-        console.log('Hash gerado para senha:', inputPasswordHash);
-        isPasswordCorrect = user.password_hash === inputPasswordHash;
-      }
+      // Verificar senha usando a função utilitária
+      const inputPasswordHash = generatePasswordHash(password);
+      console.log('Hash gerado para senha:', inputPasswordHash);
       
-      if (isPasswordCorrect) {
+      if (user.password_hash === inputPasswordHash) {
         localStorage.setItem('admin_session', 'true');
         localStorage.setItem('current_admin_user', username);
         setIsAuthenticated(true);

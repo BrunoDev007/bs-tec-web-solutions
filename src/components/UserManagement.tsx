@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { UserPlus, Key, Trash2, Mail } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { generatePasswordHash } from '@/utils/passwordUtils';
 
 interface User {
   id: string;
@@ -20,17 +21,6 @@ interface UserManagementProps {
   open: boolean;
   onClose: () => void;
 }
-
-// Função para gerar hash consistente da senha (mesma do useAuth)
-const generatePasswordHash = (password: string): string => {
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return `$2b$10$${Math.abs(hash).toString(16).padStart(22, '0').substring(0, 22)}`;
-};
 
 const UserManagement = ({ open, onClose }: UserManagementProps) => {
   const [users, setUsers] = useState<User[]>([]);
@@ -96,7 +86,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
         return;
       }
 
-      // Gerar hash da senha
+      // Gerar hash da senha usando a função utilitária
       const hashedPassword = generatePasswordHash(newUserPassword);
       console.log('Criando usuário com hash:', hashedPassword);
       
@@ -147,7 +137,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
       console.log('Usuário encontrado para alteração de senha:', user.username);
       console.log('Hash atual armazenado:', user.password_hash);
 
-      // Verificar senha atual
+      // Verificar senha atual usando a função utilitária
       const currentPasswordHash = generatePasswordHash(currentPassword);
       console.log('Hash da senha atual digitada:', currentPasswordHash);
       
@@ -157,7 +147,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
         return;
       }
 
-      // Gerar hash da nova senha
+      // Gerar hash da nova senha usando a função utilitária
       const newPasswordHash = generatePasswordHash(newPassword);
       console.log('Alterando senha para o hash:', newPasswordHash);
       
