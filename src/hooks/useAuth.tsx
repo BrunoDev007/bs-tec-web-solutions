@@ -1,7 +1,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { generatePasswordHash } from '@/utils/passwordUtils';
+import { verifyPassword } from '@/utils/passwordUtils';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -51,13 +51,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       console.log('Usuário encontrado:', user.username);
-      console.log('Hash armazenado:', user.password_hash);
-
-      // Verificar senha usando a função utilitária
-      const inputPasswordHash = generatePasswordHash(password);
-      console.log('Hash gerado para senha:', inputPasswordHash);
       
-      if (user.password_hash === inputPasswordHash) {
+      // Verificar senha usando a função utilitária
+      if (verifyPassword(password, user.password_hash)) {
         localStorage.setItem('admin_session', 'true');
         localStorage.setItem('current_admin_user', username);
         setIsAuthenticated(true);
