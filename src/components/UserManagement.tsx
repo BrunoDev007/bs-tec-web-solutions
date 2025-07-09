@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserPlus, Key, Mail } from 'lucide-react';
+import { UserPlus, Key, Mail, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import AddUserForm from './user-management/AddUserForm';
 import ChangePasswordForm from './user-management/ChangePasswordForm';
 import PasswordRecoveryForm from './user-management/PasswordRecoveryForm';
+import PasswordResetForm from './user-management/PasswordResetForm';
 import UsersList from './user-management/UsersList';
 
 interface User {
@@ -28,6 +29,7 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
   const [showAddUser, setShowAddUser] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   const { currentUser } = useAuth();
 
@@ -86,7 +88,15 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
               className="flex items-center gap-2"
             >
               <Mail className="h-4 w-4" />
-              Recuperar Senha
+              Gerar Token
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setShowPasswordReset(true)} 
+              className="flex items-center gap-2"
+            >
+              <RotateCcw className="h-4 w-4" />
+              Redefinir Senha
             </Button>
           </div>
 
@@ -114,6 +124,11 @@ const UserManagement = ({ open, onClose }: UserManagementProps) => {
           <PasswordRecoveryForm 
             open={showPasswordRecovery}
             onClose={() => setShowPasswordRecovery(false)}
+          />
+
+          <PasswordResetForm 
+            open={showPasswordReset}
+            onClose={() => setShowPasswordReset(false)}
           />
         </div>
       </DialogContent>
