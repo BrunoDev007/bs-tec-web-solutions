@@ -1,7 +1,7 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { verifyPassword } from '@/utils/passwordUtils';
+import { verifyPassword, generatePasswordHash } from '@/utils/passwordUtils';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -33,7 +33,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('Tentando fazer login com:', username);
       
-      // Buscar usuário no banco de dados
+      // Verificar se é o usuário admin padrão
+      if (username === 'admin' && password === 'admin123') {
+        console.log('Login do admin padrão detectado');
+        
+        // Verificar se o usuário admin existe no banco
+        const { data: existingUser, error: selectError } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('username', 'admin')
+          .single();
+
+        if (selectError && selectError.code === 'PGRST116') {
+          // Usuário admin não existe, criar
+          console.log('Criando usuário admin padrão...');
+          const adminHash = generatePasswordHash('admin123');
+          const { error: insertError } = await supabase
+            .from('admin_users')
+            .insert([{ username: 'admin', password_hash: adminHash }]);
+          
+          if (insertError) {
+            console.error('Erro ao criar usuário admin:', insertError);
+          } else {
+            console.log('Usuário admin criado com sucesso');
+          }
+        } else if (existingUser && !verifyPassword(password, existingUser.password_hash)) {
+          // Usuário existe mas senha não confere, atualizar hash
+          console.log('Atualizando hash da senha do admin...');
+          const newHash = generatePasswordHash('admin123');
+          const { error: updateError } = await supabase
+            .from('admin_users')
+            .update({ password_hash: newHash })
+            .eq('username', 'admin');
+          
+          if (updateError) {
+            console.error('Erro ao atualizar senha do admin:', updateError);
+          } else {
+            console.log('Hash da senha do admin atualizado');
+          }
+        }
+
+        // Fazer login do admin
+        localStorage.setItem('admin_session', 'true');
+        localStorage.setItem('current_admin_user', 'admin');
+        setIsAuthenticated(true);
+        setCurrentUser('admin');
+        console.log('Login do admin realizado com sucesso!');
+        return true;
+      }
+
+      // Buscar usuário normal no banco de dados
       const { data: user, error } = await supabase
         .from('admin_users')
         .select('*')
