@@ -25,46 +25,48 @@ const ArquivosHeader = ({
   onLogout
 }: ArquivosHeaderProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-start sm:space-y-0 mb-4">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Arquivos Técnicos
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Repositório de drivers e ferramentas técnicas organizados por categoria
           </p>
         </div>
         
-        {/* Admin Controls */}
-        <div className="flex gap-2">
+        {/* Admin Controls - Stack vertically on mobile */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           {isAuthenticated ? (
             <>
-              <Button onClick={onAddFile} className="flex items-center gap-2">
+              <Button onClick={onAddFile} className="flex items-center justify-center gap-2 text-sm">
                 <Plus className="h-4 w-4" />
-                Adicionar Arquivo
+                <span className="hidden sm:inline">Adicionar Arquivo</span>
+                <span className="sm:hidden">Adicionar</span>
               </Button>
               {/* Apenas admin pode gerenciar usuários */}
               {currentUser === 'admin' && (
                 <Button 
                   variant="outline" 
                   onClick={onUserManagement}
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-2 text-sm"
                 >
                   <Settings className="h-4 w-4" />
-                  Gerenciar Usuários
+                  <span className="hidden sm:inline">Gerenciar Usuários</span>
+                  <span className="sm:hidden">Usuários</span>
                 </Button>
               )}
-              <Button variant="outline" onClick={onLogout} className="flex items-center gap-2">
+              <Button variant="outline" onClick={onLogout} className="flex items-center justify-center gap-2 text-sm">
                 <LogOut className="h-4 w-4" />
-                Sair
+                <span>Sair</span>
               </Button>
             </>
           ) : (
             <Button 
               variant="outline" 
               onClick={onLogin}
-              className="text-sm"
+              className="text-sm w-full sm:w-auto"
             >
               Login Admin
             </Button>
@@ -80,7 +82,7 @@ const ArquivosHeader = ({
           placeholder="Buscar arquivos..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
     </div>

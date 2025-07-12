@@ -53,7 +53,7 @@ const ArquivosContent = () => {
 
   return (
     <div className="min-h-screen pt-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <ArquivosHeader
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -67,9 +67,15 @@ const ArquivosContent = () => {
 
         {/* Tabs for File Categories */}
         <Tabs defaultValue="thermal" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="thermal">Drivers Impressoras Térmicas</TabsTrigger>
-            <TabsTrigger value="multifunction">Drivers Impressoras Multifuncionais</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto">
+            <TabsTrigger value="thermal" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
+              <span className="hidden sm:inline">Drivers Impressoras Térmicas</span>
+              <span className="sm:hidden">Térmicas</span>
+            </TabsTrigger>
+            <TabsTrigger value="multifunction" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
+              <span className="hidden sm:inline">Drivers Impressoras Multifuncionais</span>
+              <span className="sm:hidden">Multifuncionais</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="thermal" className="space-y-4">
@@ -97,14 +103,14 @@ const ArquivosContent = () => {
 
         {/* Login Dialog */}
         <Dialog open={showLogin} onOpenChange={setShowLogin}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-sm sm:max-w-md mx-4">
             <LoginForm onClose={() => setShowLogin(false)} />
           </DialogContent>
         </Dialog>
 
         {/* File Form Dialog */}
         <Dialog open={showFileForm} onOpenChange={setShowFileForm}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-sm sm:max-w-md mx-4">
             <FileForm 
               file={editingFile}
               onClose={() => setShowFileForm(false)}
@@ -116,7 +122,7 @@ const ArquivosContent = () => {
         {/* User Management Dialog - Apenas para admin */}
         {currentUser === 'admin' && (
           <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-sm sm:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
               <UserManagement 
                 open={showUserManagement}
                 onClose={() => setShowUserManagement(false)}

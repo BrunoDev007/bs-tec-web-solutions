@@ -66,27 +66,30 @@ const FileForm = ({ file, onClose, onSuccess }: FileFormProps) => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>{file ? 'Editar Arquivo' : 'Adicionar Novo Arquivo'}</CardTitle>
+    <Card className="w-full border-0 shadow-none">
+      <CardHeader className="px-0 pb-4">
+        <CardTitle className="text-lg sm:text-xl">
+          {file ? 'Editar Arquivo' : 'Adicionar Novo Arquivo'}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0 space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Nome do Arquivo</Label>
+            <Label htmlFor="name" className="text-sm font-medium">Nome do Arquivo</Label>
             <Input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="mt-1"
             />
           </div>
 
           <div>
-            <Label htmlFor="category">Categoria</Label>
+            <Label htmlFor="category" className="text-sm font-medium">Categoria</Label>
             <Select value={category} onValueChange={setCategory} required>
-              <SelectTrigger>
+              <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
               <SelectContent>
@@ -97,43 +100,46 @@ const FileForm = ({ file, onClose, onSuccess }: FileFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="url">URL do Arquivo</Label>
+            <Label htmlFor="url" className="text-sm font-medium">URL do Arquivo</Label>
             <Input
               id="url"
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               required
+              className="mt-1"
             />
           </div>
 
           <div>
-            <Label htmlFor="size">Tamanho</Label>
+            <Label htmlFor="size" className="text-sm font-medium">Tamanho</Label>
             <Input
               id="size"
               type="text"
               value={size}
               onChange={(e) => setSize(e.target.value)}
               placeholder="Ex: 58.4 MB"
+              className="mt-1"
             />
           </div>
 
           <div>
-            <Label htmlFor="type">Tipo</Label>
+            <Label htmlFor="type" className="text-sm font-medium">Tipo</Label>
             <Input
               id="type"
               type="text"
               value={type}
               onChange={(e) => setType(e.target.value)}
               placeholder="Ex: ZIP, PDF"
+              className="mt-1"
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">
               {loading ? 'Salvando...' : 'Salvar'}
             </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
             </Button>
           </div>
