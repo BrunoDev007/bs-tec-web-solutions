@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -61,45 +62,48 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Create email content
-    const emailSubject = `Contato BS Suporte Tec - ${formData.motivo}`;
-    const emailBody = `
-Nome: ${formData.nome} ${formData.sobrenome}
-E-mail: ${formData.email}
-Telefone: ${formData.telefone}
-Motivo: ${formData.motivo}
+    const templateParams = {
+      nome: formData.nome,
+      sobrenome: formData.sobrenome,
+      email: formData.email,
+      telefone: formData.telefone,
+      motivo: formData.motivo,
+      mensagem: formData.mensagem,
+    };
 
-Mensagem:
-${formData.mensagem}
-    `;
+    emailjs.send(
+      'service_awujbjp', // Substitua aqui
+      'template_em3x4fo', // Substitua aqui
+      templateParams,
+      '74eN_AID384SSSKVA' // Substitua aqui
+    ).then(() => {
+      toast({
+        title: "Mensagem enviada!",
+        description: "Obrigado pelo contato. Em breve retornaremos.",
+      });
 
-    // Create mailto link
-    const mailtoLink = `mailto:bs.suporte.tec@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-
-    // Show success message
-    toast({
-      title: "Formulário enviado!",
-      description: "Seu cliente de e-mail foi aberto com a mensagem. Obrigado pelo contato!",
-    });
-
-    // Reset form
-    setFormData({
-      nome: '',
-      sobrenome: '',
-      email: '',
-      telefone: '',
-      motivo: '',
-      mensagem: ''
+      setFormData({
+        nome: '',
+        sobrenome: '',
+        email: '',
+        telefone: '',
+        motivo: '',
+        mensagem: ''
+      });
+    }).catch((error) => {
+      console.error('Erro ao enviar email:', error);
+      toast({
+        title: "Erro ao enviar",
+        description: "Tente novamente mais tarde ou entre em contato direto.",
+        variant: "destructive"
+      });
     });
   };
 
