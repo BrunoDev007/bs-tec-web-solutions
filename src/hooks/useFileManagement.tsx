@@ -20,11 +20,6 @@ export const useFileManagement = () => {
   const { user } = useSecureAuth();
 
   const loadFiles = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
     try {
       const { data, error } = await supabase
         .from('files')
@@ -75,10 +70,8 @@ export const useFileManagement = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      loadFiles();
-    }
-  }, [user]);
+    loadFiles();
+  }, []);
 
   return {
     files,
