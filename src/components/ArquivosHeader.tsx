@@ -9,9 +9,6 @@ interface ArquivosHeaderProps {
   isAuthenticated: boolean;
   currentUser: string | null;
   onAddFile: () => void;
-  onUserManagement: () => void;
-  onLogin: () => void;
-  onLogout: () => void;
 }
 
 const ArquivosHeader = ({
@@ -19,10 +16,7 @@ const ArquivosHeader = ({
   onSearchChange,
   isAuthenticated,
   currentUser,
-  onAddFile,
-  onUserManagement,
-  onLogin,
-  onLogout
+  onAddFile
 }: ArquivosHeaderProps) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
@@ -38,37 +32,11 @@ const ArquivosHeader = ({
         
         {/* Admin Controls - Stack vertically on mobile */}
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          {isAuthenticated ? (
-            <>
-              <Button onClick={onAddFile} className="flex items-center justify-center gap-2 text-sm">
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Adicionar Arquivo</span>
-                <span className="sm:hidden">Adicionar</span>
-              </Button>
-              {/* Apenas admin pode gerenciar usuários */}
-              {currentUser === 'admin' && (
-                <Button 
-                  variant="outline" 
-                  onClick={onUserManagement}
-                  className="flex items-center justify-center gap-2 text-sm"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span className="hidden sm:inline">Gerenciar Usuários</span>
-                  <span className="sm:hidden">Usuários</span>
-                </Button>
-              )}
-              <Button variant="outline" onClick={onLogout} className="flex items-center justify-center gap-2 text-sm">
-                <LogOut className="h-4 w-4" />
-                <span>Sair</span>
-              </Button>
-            </>
-          ) : (
-            <Button 
-              variant="outline" 
-              onClick={onLogin}
-              className="text-sm w-full sm:w-auto"
-            >
-              Login Admin
+          {isAuthenticated && (
+            <Button onClick={onAddFile} className="flex items-center justify-center gap-2 text-sm">
+              <Plus className="h-4 w-4" />
+              <span className="hidden sm:inline">Adicionar Arquivo</span>
+              <span className="sm:hidden">Adicionar</span>
             </Button>
           )}
         </div>

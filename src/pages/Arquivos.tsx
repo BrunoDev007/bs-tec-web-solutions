@@ -2,22 +2,18 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { useFileManagement } from '@/hooks/useFileManagement';
-import LoginForm from '@/components/LoginForm';
 import FileForm from '@/components/FileForm';
-import UserManagement from '@/components/UserManagement';
 import ArquivosHeader from '@/components/ArquivosHeader';
 import FilesList from '@/components/FilesList';
 
-const ArquivosContent = () => {
+const Arquivos = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLogin, setShowLogin] = useState(false);
   const [showFileForm, setShowFileForm] = useState(false);
-  const [showUserManagement, setShowUserManagement] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   
-  const { isAuthenticated, currentUser, logout } = useAuth();
+  const { user } = useSecureAuth();
   const { files, loading, loadFiles, handleDeleteFile, filterFiles } = useFileManagement();
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
@@ -57,12 +53,9 @@ const ArquivosContent = () => {
         <ArquivosHeader
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          isAuthenticated={isAuthenticated}
-          currentUser={currentUser}
+          isAuthenticated={!!user}
+          currentUser={user?.email}
           onAddFile={handleAddFile}
-          onUserManagement={() => setShowUserManagement(true)}
-          onLogin={() => setShowLogin(true)}
-          onLogout={logout}
         />
 
         {/* Tabs for File Categories */}
@@ -82,7 +75,7 @@ const ArquivosContent = () => {
             <FilesList 
               files={filteredThermalFiles} 
               title="Drivers para Impressoras Térmicas"
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={!!user}
               onEditFile={handleEditFile}
               onDeleteFile={handleDeleteFile}
               searchTerm={searchTerm}
@@ -93,20 +86,13 @@ const ArquivosContent = () => {
             <FilesList 
               files={filteredMultifunctionFiles} 
               title="Drivers para Impressoras Multifuncionais"
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={!!user}
               onEditFile={handleEditFile}
               onDeleteFile={handleDeleteFile}
               searchTerm={searchTerm}
             />
           </TabsContent>
         </Tabs>
-
-        {/* Login Dialog */}
-        <Dialog open={showLogin} onOpenChange={setShowLogin}>
-          <DialogContent className="max-w-sm sm:max-w-md mx-4">
-            <LoginForm onClose={() => setShowLogin(false)} />
-          </DialogContent>
-        </Dialog>
 
         {/* File Form Dialog */}
         <Dialog open={showFileForm} onOpenChange={setShowFileForm}>
@@ -118,29 +104,10 @@ const ArquivosContent = () => {
             />
           </DialogContent>
         </Dialog>
-
-        {/* User Management Dialog - Apenas para admin */}
-        {currentUser === 'admin' && (
-          <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-            <DialogContent className="max-w-sm sm:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-              <UserManagement 
-                open={showUserManagement}
-                onClose={() => setShowUserManagement(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
       </div>
     </div>
   );
 };
 
-const Arquivos = () => {
-  return (
-    <AuthProvider>
-      <ArquivosContent />
-    </AuthProvider>
-  );
-};
 
 export default Arquivos;

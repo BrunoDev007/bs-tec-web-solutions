@@ -1,11 +1,14 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Monitor } from 'lucide-react';
+import { Menu, X, Monitor, LogOut, User } from 'lucide-react';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
+import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const location = useLocation();
+  const { user, signOut } = useSecureAuth();
 
   const navigation = [
     { name: 'Início', href: '/' },
@@ -43,6 +46,24 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {user && (
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-300">
+                  <User size={16} />
+                  <span>{user.email}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={signOut}
+                  className="flex items-center space-x-2 text-gray-300 border-gray-300 hover:bg-slate-700 hover:text-white"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -75,6 +96,27 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {user && (
+              <div className="px-3 py-2 border-t border-slate-600 mt-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-300 mb-3">
+                  <User size={16} />
+                  <span>{user.email}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 text-gray-300 border-gray-300 hover:bg-slate-600 hover:text-white"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
