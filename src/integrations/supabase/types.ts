@@ -19,18 +19,21 @@ export type Database = {
           created_at: string
           id: string
           password_hash: string
+          user_id: string | null
           username: string
         }
         Insert: {
           created_at?: string
           id?: string
           password_hash: string
+          user_id?: string | null
           username: string
         }
         Update: {
           created_at?: string
           id?: string
           password_hash?: string
+          user_id?: string | null
           username?: string
         }
         Relationships: []
@@ -108,7 +111,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
