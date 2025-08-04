@@ -103,193 +103,122 @@ const SecureLoginForm = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (showResetPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">Reset Password</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleResetPassword} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-
-              {errors.length > 0 && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
-                  {errors.map((error, index) => (
-                    <p key={index} className="text-sm text-destructive">{error}</p>
-                  ))}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Sending...' : 'Send Reset Email'}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => setShowResetPassword(false)}
-                >
-                  Back to Login
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+      <div className="space-y-6 p-6">
+        <h2 className="text-lg font-semibold text-center text-gray-900">Recuperar Senha</h2>
+        {errors.length > 0 && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+            {errors.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Digite seu email"
+              required
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button 
+              type="submit" 
+              className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Enviando...' : 'Enviar'}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline"
+              className="flex-1 text-gray-600 py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              onClick={() => setShowResetPassword(false)}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-center">BS Suporte Tec</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div>
-                  <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signin-password">Password</Label>
-                  <Input
-                    id="signin-password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-
-                {errors.length > 0 && (
-                  <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
-                    {errors.map((error, index) => (
-                      <p key={index} className="text-sm text-destructive">{error}</p>
-                    ))}
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Signing In...' : 'Sign In'}
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="link" 
-                    className="w-full text-sm"
-                    onClick={() => setShowResetPassword(true)}
-                  >
-                    Forgot Password?
-                  </Button>
-                </div>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div>
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Create a strong password"
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input
-                    id="confirm-password"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    placeholder="Confirm your password"
-                    required
-                  />
-                </div>
-
-                {errors.length > 0 && (
-                  <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
-                    {errors.map((error, index) => (
-                      <p key={index} className="text-sm text-destructive">{error}</p>
-                    ))}
-                  </div>
-                )}
-
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating Account...' : 'Sign Up'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+    <div className="w-full max-w-md mx-auto">
+      <div className="space-y-6 p-6">
+        <h2 className="text-lg font-semibold text-center text-gray-900">Login Administrativo</h2>
+        {errors.length > 0 && (
+          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+            {errors.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
+        <form onSubmit={handleSignIn} className="space-y-4">
+          <div>
+            <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+              Usuário
+            </Label>
+            <Input
+              id="username"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Digite seu email"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              Senha
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="mt-1 w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Digite sua senha"
+              required
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button 
+              type="submit" 
+              className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-md hover:bg-blue-600 transition-colors font-medium"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Entrando...' : 'Entrar'}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline"
+              className="flex-1 text-gray-600 py-3 px-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors font-medium"
+              onClick={() => setShowResetPassword(true)}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
