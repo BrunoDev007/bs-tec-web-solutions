@@ -78,9 +78,8 @@ const Arquivos = () => {
         <ArquivosHeader
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          isAuthenticated={!!user}
-          currentUser={user?.email}
           onAddFile={handleAddFile}
+          onLogin={() => setShowLoginForm(true)}
         />
 
         {/* Tabs for File Categories */}

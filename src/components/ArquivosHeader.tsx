@@ -1,23 +1,23 @@
 
 import React from 'react';
-import { Search, Plus, Settings, LogOut } from 'lucide-react';
+import { Search, Plus, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
 
 interface ArquivosHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  isAuthenticated: boolean;
-  currentUser: string | null;
   onAddFile: () => void;
+  onLogin: () => void;
 }
 
 const ArquivosHeader = ({
   searchTerm,
   onSearchChange,
-  isAuthenticated,
-  currentUser,
-  onAddFile
+  onAddFile,
+  onLogin
 }: ArquivosHeaderProps) => {
+  const { user, signOut } = useSecureAuth();
   return (
     <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
       <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-start sm:space-y-0 mb-4">
@@ -32,11 +32,30 @@ const ArquivosHeader = ({
         
         {/* Admin Controls - Stack vertically on mobile */}
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          {isAuthenticated && (
-            <Button onClick={onAddFile} className="flex items-center justify-center gap-2 text-sm">
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline">Adicionar Arquivo</span>
-              <span className="sm:hidden">Adicionar</span>
+          {user ? (
+            <>
+              <Button onClick={onAddFile} className="flex items-center justify-center gap-2 text-sm">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Adicionar Arquivo</span>
+                <span className="sm:hidden">Adicionar</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={signOut} 
+                className="flex items-center justify-center gap-2 text-sm"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sair</span>
+              </Button>
+            </>
+          ) : (
+            <Button 
+              onClick={onLogin} 
+              className="flex items-center justify-center gap-2 text-sm"
+            >
+              <LogIn className="h-4 w-4" />
+              <span className="hidden sm:inline">Login Admin</span>
+              <span className="sm:hidden">Login</span>
             </Button>
           )}
         </div>
