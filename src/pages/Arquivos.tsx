@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import SecureLoginForm from '@/components/auth/SecureLoginForm';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import FileForm from '@/components/FileForm';
@@ -11,10 +12,11 @@ import FilesList from '@/components/FilesList';
 const Arquivos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showFileForm, setShowFileForm] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   
   const { user } = useSecureAuth();
-  const { files, loading, loadFiles, handleDeleteFile, filterFiles } = useFileManagement();
+  const { files, loading, loadFiles, handleDeleteFile: deleteFile, filterFiles } = useFileManagement();
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
   const multifunctionFiles = files.filter(file => file.category === 'multifunction');
@@ -23,18 +25,41 @@ const Arquivos = () => {
   const filteredMultifunctionFiles = filterFiles(multifunctionFiles, searchTerm);
 
   const handleEditFile = (file) => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
     setEditingFile(file);
     setShowFileForm(true);
   };
 
   const handleAddFile = () => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
     setEditingFile(null);
     setShowFileForm(true);
+  };
+
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
+    await deleteFile(fileId, fileName);
   };
 
   const handleFormSuccess = () => {
     loadFiles();
   };
+
+  // Fechar modal de login quando usuário fizer login
+  useEffect(() => {
+    if (user && showLoginForm) {
+      setShowLoginForm(false);
+    }
+  }, [user, showLoginForm]);
 
   if (loading) {
     return (
@@ -102,6 +127,13 @@ const Arquivos = () => {
               onClose={() => setShowFileForm(false)}
               onSuccess={handleFormSuccess}
             />
+          </DialogContent>
+        </Dialog>
+
+        {/* Login Form Dialog */}
+        <Dialog open={showLoginForm} onOpenChange={setShowLoginForm}>
+          <DialogContent className="max-w-sm sm:max-w-md mx-4">
+            <SecureLoginForm />
           </DialogContent>
         </Dialog>
       </div>
