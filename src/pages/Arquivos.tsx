@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import SecureLoginForm from '@/components/auth/SecureLoginForm';
+import AdminPanel from '@/components/admin/AdminPanel';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import FileForm from '@/components/FileForm';
@@ -81,6 +82,13 @@ const Arquivos = () => {
           onAddFile={handleAddFile}
           onLogin={() => setShowLoginForm(true)}
         />
+
+        {/* Admin Panel - só aparece quando logado */}
+        {user && (
+          <div className="mb-6">
+            <AdminPanel />
+          </div>
+        )}
 
         {/* Tabs for File Categories */}
         <Tabs defaultValue="thermal" className="w-full">
