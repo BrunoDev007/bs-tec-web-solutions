@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import SecureLoginForm from '@/components/auth/SecureLoginForm';
 import AdminPanel from '@/components/admin/AdminPanel';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
@@ -18,16 +16,8 @@ const Arquivos = () => {
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   
-  const { user, resetPassword } = useSecureAuth();
+  const { user } = useSecureAuth();
   const { files, loading, loadFiles, handleDeleteFile: deleteFile, filterFiles } = useFileManagement();
-
-  // Função temporária para reset de senha
-  const handleTempPasswordReset = async () => {
-    const result = await resetPassword('bs.suporte.tec@gmail.com');
-    if (!result.error) {
-      toast.success('Email de recuperação enviado para bs.suporte.tec@gmail.com');
-    }
-  };
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
   const multifunctionFiles = files.filter(file => file.category === 'multifunction');
@@ -92,20 +82,6 @@ const Arquivos = () => {
           onAddFile={handleAddFile}
           onLogin={() => setShowLoginForm(true)}
         />
-
-        {/* Botão temporário para reset de senha */}
-        <div className="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded">
-          <p className="text-sm text-yellow-700 mb-2">
-            Botão temporário para reset de senha do admin
-          </p>
-          <Button 
-            onClick={handleTempPasswordReset}
-            variant="outline"
-            size="sm"
-          >
-            Reset Senha: bs.suporte.tec@gmail.com
-          </Button>
-        </div>
 
         {/* Admin Panel - só aparece quando logado */}
         {user && (
