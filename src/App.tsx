@@ -14,6 +14,7 @@ import About from "./pages/About";
 import Support from "./pages/Support";
 import Contact from "./pages/Contact";
 import Arquivos from "./pages/Arquivos";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { SecureAuthProvider } from "./hooks/useSecureAuth";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -37,7 +38,8 @@ const App = () => (
                 <Route path="/quem-somos" element={<About />} />
                 <Route path="/suporte" element={<Support />} />
                 <Route path="/contato" element={<Contact />} />
-          <Route path="/arquivos" element={<Arquivos />} />
+                <Route path="/arquivos" element={<Arquivos />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
