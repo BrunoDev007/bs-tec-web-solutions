@@ -17,31 +17,6 @@ const CreateUserForm = ({ onBack }: CreateUserFormProps) => {
     confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
-  const [createAdminUser, setCreateAdminUser] = useState(false);
-
-  // Criar usuário ADMIN na primeira vez
-  React.useEffect(() => {
-    const createInitialAdmin = async () => {
-      if (!createAdminUser) {
-        setCreateAdminUser(true);
-        try {
-          const { error } = await supabase.auth.admin.createUser({
-            email: 'admin@sistema.com',
-            password: 'MotoXT1965-2',
-            email_confirm: true
-          });
-          
-          if (!error) {
-            console.log('Usuário ADMIN criado com sucesso');
-          }
-        } catch (error) {
-          console.error('Erro ao criar usuário ADMIN:', error);
-        }
-      }
-    };
-    
-    createInitialAdmin();
-  }, [createAdminUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

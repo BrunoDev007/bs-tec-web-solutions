@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Trash2, Edit, Key, Plus } from 'lucide-react';
@@ -32,6 +32,30 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
     confirmPassword: ''
   });
 
+  // Criar usuário ADMIN se não existir
+  const createAdminUser = async () => {
+    try {
+      // Primeiro tenta fazer signup do usuário ADMIN
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: 'admin@sistema.com',
+        password: 'MotoXT1965-2',
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (signUpError && !signUpError.message.includes('already registered')) {
+        console.error('Erro ao criar usuário ADMIN:', signUpError);
+        toast.error('Erro ao criar usuário ADMIN: ' + signUpError.message);
+      } else {
+        console.log('Usuário ADMIN criado/já existe');
+        toast.success('Usuário ADMIN configurado!');
+      }
+    } catch (error) {
+      console.error('Erro ao criar usuário ADMIN:', error);
+    }
+  };
+
   // Buscar usuários
   const fetchUsers = async () => {
     setLoading(true);
@@ -47,6 +71,11 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
           email_confirmed_at: user.email_confirmed_at
         }));
         setUsers(formattedUsers);
+        
+        // Se não há usuários, cria o ADMIN
+        if (formattedUsers.length === 0) {
+          await createAdminUser();
+        }
       }
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
@@ -201,6 +230,9 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Criar Novo Usuário</DialogTitle>
+                    <DialogDescription>
+                      Preencha os dados para criar um novo usuário no sistema.
+                    </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCreateUser} className="space-y-4">
                     <div>
