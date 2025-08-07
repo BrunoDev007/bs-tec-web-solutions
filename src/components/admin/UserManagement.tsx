@@ -55,6 +55,12 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
+      // Sempre tentar criar o usuário ADMIN primeiro
+      await createAdminUser();
+      
+      // Aguardar para garantir que foi criado
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       const { data, error } = await supabase.auth.admin.listUsers();
       if (error) {
         toast.error('Erro ao buscar usuários: ' + error.message);
@@ -66,11 +72,6 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
           email_confirmed_at: user.email_confirmed_at
         }));
         setUsers(formattedUsers);
-        
-        // Se não há usuários, cria o ADMIN
-        if (formattedUsers.length === 0) {
-          await createAdminUser();
-        }
       }
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
