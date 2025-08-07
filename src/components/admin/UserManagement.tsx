@@ -35,33 +35,15 @@ const UserManagement = ({ onBack }: UserManagementProps) => {
   // Criar usuário ADMIN se não existir
   const createAdminUser = async () => {
     try {
-      // Usar a API diretamente para criar o usuário ADMIN
-      const response = await fetch('https://nucqjivescevldpunbii.supabase.co/auth/v1/admin/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51Y3FqaXZlc2NldmxkcHVuYmlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwODM4OTksImV4cCI6MjA2NzY1OTg5OX0.j1Pv2wTQWofIHpEpsjkQJV3w1oX2iPp0AmQPMrwaWNo',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51Y3FqaXZlc2NldmxkcHVuYmlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwODM4OTksImV4cCI6MjA2NzY1OTg5OX0.j1Pv2wTQWofIHpEpsjkQJV3w1oX2iPp0AmQPMrwaWNo'
-        },
-        body: JSON.stringify({
-          email: 'admin@sistema.com',
-          password: 'MotoXT1965-2',
-          email_confirm: true
-        })
-      });
-
-      const result = await response.json();
+      // Usar edge function para criar o usuário ADMIN
+      const { data, error } = await supabase.functions.invoke('create-admin');
       
-      if (response.ok) {
-        console.log('Usuário ADMIN criado com sucesso:', result);
-        toast.success('Usuário ADMIN criado com sucesso!');
+      if (error) {
+        console.error('Erro ao criar usuário ADMIN:', error);
+        toast.error('Erro ao criar usuário ADMIN: ' + error.message);
       } else {
-        console.error('Erro ao criar usuário:', result);
-        if (result.message?.includes('already exists')) {
-          toast.success('Usuário ADMIN já existe!');
-        } else {
-          toast.error('Erro: ' + result.message);
-        }
+        console.log('Resposta da criação do usuário ADMIN:', data);
+        toast.success(data.message || 'Usuário ADMIN configurado!');
       }
     } catch (error) {
       console.error('Erro ao criar usuário ADMIN:', error);
