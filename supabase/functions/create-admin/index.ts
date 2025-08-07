@@ -17,7 +17,35 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Criar usuário ADMIN
+    // Verificar se o usuário já existe
+    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers()
+    const adminExists = existingUsers.users.find(user => user.email === 'admin@sistema.com')
+    
+    if (adminExists) {
+      // Se existe, atualizar senha para garantir que está correta
+      const { error: updateError } = await supabaseClient.auth.admin.updateUserById(
+        adminExists.id,
+        { 
+          password: 'MotoXT1965-2',
+          email_confirm: true
+        }
+      )
+      
+      if (updateError) {
+        console.error('Erro ao atualizar senha do ADMIN:', updateError)
+      }
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Usuário ADMIN já existe e senha foi atualizada',
+          user_id: adminExists.id
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Criar usuário ADMIN se não existe
     const { data, error } = await supabaseClient.auth.admin.createUser({
       email: 'admin@sistema.com',
       password: 'MotoXT1965-2',
@@ -25,18 +53,27 @@ serve(async (req) => {
     })
 
     if (error) {
-      // Se já existe, não é erro
-      if (error.message.includes('already exists') || error.message.includes('already registered')) {
-        return new Response(
-          JSON.stringify({ success: true, message: 'Usuário ADMIN já existe' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
-      throw error
+      console.error('Erro ao criar usuário ADMIN:', error)
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: error.message,
+          message: 'Erro ao criar usuário ADMIN' 
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
     }
 
     return new Response(
-      JSON.stringify({ success: true, data, message: 'Usuário ADMIN criado com sucesso' }),
+      JSON.stringify({ 
+        success: true, 
+        data, 
+        message: 'Usuário ADMIN criado com sucesso',
+        user_id: data.user?.id
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
