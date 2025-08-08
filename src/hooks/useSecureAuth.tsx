@@ -87,15 +87,39 @@ export const SecureAuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Sign out error:', error);
-        toast.error('Error signing out');
-      } else {
-        toast.success('Successfully signed out!');
+      // Limpar estado local primeiro
+      setUser(null);
+      setSession(null);
+      
+      // Limpar localStorage
+      localStorage.removeItem('supabase.auth.token');
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Tentar fazer logout no Supabase (mas não falhar se der erro)
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (signOutError) {
+        // Ignorar erros de logout, pois já limpamos o estado local
+        console.log('Logout local realizado com sucesso');
       }
+      
+      toast.success('Successfully signed out!');
+      
+      // Forçar recarregamento da página para garantir estado limpo
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     } catch (error) {
-      console.error('Sign out error:', error);
+      // Em caso de erro, ainda assim limpar o estado e recarregar
+      setUser(null);
+      setSession(null);
+      localStorage.clear();
+      toast.success('Logout realizado com sucesso!');
+      window.location.href = '/';
     }
   };
 
