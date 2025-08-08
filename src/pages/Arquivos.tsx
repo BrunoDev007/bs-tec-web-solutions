@@ -21,9 +21,11 @@ const Arquivos = () => {
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
   const multifunctionFiles = files.filter(file => file.category === 'multifunction');
+  const diagnosticFiles = files.filter(file => file.category === 'diagnostic');
 
   const filteredThermalFiles = filterFiles(thermalFiles, searchTerm);
   const filteredMultifunctionFiles = filterFiles(multifunctionFiles, searchTerm);
+  const filteredDiagnosticFiles = filterFiles(diagnosticFiles, searchTerm);
 
   const handleEditFile = (file) => {
     if (!user) {
@@ -92,7 +94,7 @@ const Arquivos = () => {
 
         {/* Tabs for File Categories */}
         <Tabs defaultValue="thermal" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
             <TabsTrigger value="thermal" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
               <span className="hidden sm:inline">Drivers Impressoras Térmicas</span>
               <span className="sm:hidden">Térmicas</span>
@@ -100,6 +102,10 @@ const Arquivos = () => {
             <TabsTrigger value="multifunction" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
               <span className="hidden sm:inline">Drivers Impressoras Multifuncionais</span>
               <span className="sm:hidden">Multifuncionais</span>
+            </TabsTrigger>
+            <TabsTrigger value="diagnostic" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
+              <span className="hidden sm:inline">Software de Diagnóstico</span>
+              <span className="sm:hidden">Diagnóstico</span>
             </TabsTrigger>
           </TabsList>
           
@@ -118,6 +124,17 @@ const Arquivos = () => {
             <FilesList 
               files={filteredMultifunctionFiles} 
               title="Drivers para Impressoras Multifuncionais"
+              isAuthenticated={!!user}
+              onEditFile={handleEditFile}
+              onDeleteFile={handleDeleteFile}
+              searchTerm={searchTerm}
+            />
+          </TabsContent>
+          
+          <TabsContent value="diagnostic" className="space-y-4">
+            <FilesList 
+              files={filteredDiagnosticFiles} 
+              title="Software de Diagnóstico"
               isAuthenticated={!!user}
               onEditFile={handleEditFile}
               onDeleteFile={handleDeleteFile}

@@ -95,6 +95,7 @@ const FileForm = ({ file, onClose, onSuccess }: FileFormProps) => {
               <SelectContent>
                 <SelectItem value="thermal">Drivers Impressoras Térmicas</SelectItem>
                 <SelectItem value="multifunction">Drivers Impressoras Multifuncionais</SelectItem>
+                <SelectItem value="diagnostic">Software de Diagnóstico</SelectItem>
               </SelectContent>
             </Select>
           </div>
