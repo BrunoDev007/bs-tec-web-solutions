@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useSecureAuth } from './useSecureAuth';
 
 interface File {
   id: string;
@@ -16,6 +17,7 @@ interface File {
 export const useFileManagement = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useSecureAuth();
 
   const loadFiles = async () => {
     try {
@@ -35,6 +37,11 @@ export const useFileManagement = () => {
   };
 
   const handleDeleteFile = async (fileId: string, fileName: string) => {
+    if (!user) {
+      toast.error('Você precisa estar logado para excluir arquivos');
+      return;
+    }
+
     if (!confirm(`Tem certeza que deseja excluir o arquivo "${fileName}"?`)) {
       return;
     }

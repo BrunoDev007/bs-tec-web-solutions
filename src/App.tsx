@@ -14,34 +14,40 @@ import About from "./pages/About";
 import Support from "./pages/Support";
 import Contact from "./pages/Contact";
 import Arquivos from "./pages/Arquivos";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
+import { SecureAuthProvider } from "./hooks/useSecureAuth";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <HashRouter>
-        <ScrollToTop />
-        <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/servicos" element={<Services />} />
-              <Route path="/quem-somos" element={<About />} />
-              <Route path="/suporte" element={<Support />} />
-              <Route path="/contato" element={<Contact />} />
-              <Route path="/arquivos" element={<Arquivos />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-          <WhatsAppButton />
-        </div>
-      </HashRouter>
+      <SecureAuthProvider>
+        <Toaster />
+        <Sonner />
+        <HashRouter>
+          <ScrollToTop />
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/servicos" element={<Services />} />
+                <Route path="/quem-somos" element={<About />} />
+                <Route path="/suporte" element={<Support />} />
+                <Route path="/contato" element={<Contact />} />
+                <Route path="/arquivos" element={<Arquivos />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+            <WhatsAppButton />
+          </div>
+        </HashRouter>
+      </SecureAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

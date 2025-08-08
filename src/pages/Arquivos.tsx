@@ -1,44 +1,68 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import SecureLoginForm from '@/components/auth/SecureLoginForm';
+import AdminPanel from '@/components/admin/AdminPanel';
+import { useSecureAuth } from '@/hooks/useSecureAuth';
 import { useFileManagement } from '@/hooks/useFileManagement';
-import LoginForm from '@/components/LoginForm';
 import FileForm from '@/components/FileForm';
-import UserManagement from '@/components/UserManagement';
 import ArquivosHeader from '@/components/ArquivosHeader';
 import FilesList from '@/components/FilesList';
 
-const ArquivosContent = () => {
+const Arquivos = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLogin, setShowLogin] = useState(false);
   const [showFileForm, setShowFileForm] = useState(false);
-  const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
   
-  const { isAuthenticated, currentUser, logout } = useAuth();
-  const { files, loading, loadFiles, handleDeleteFile, filterFiles } = useFileManagement();
+  const { user } = useSecureAuth();
+  const { files, loading, loadFiles, handleDeleteFile: deleteFile, filterFiles } = useFileManagement();
 
   const thermalFiles = files.filter(file => file.category === 'thermal');
   const multifunctionFiles = files.filter(file => file.category === 'multifunction');
+  const diagnosticFiles = files.filter(file => file.category === 'diagnostic');
 
   const filteredThermalFiles = filterFiles(thermalFiles, searchTerm);
   const filteredMultifunctionFiles = filterFiles(multifunctionFiles, searchTerm);
+  const filteredDiagnosticFiles = filterFiles(diagnosticFiles, searchTerm);
 
   const handleEditFile = (file) => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
     setEditingFile(file);
     setShowFileForm(true);
   };
 
   const handleAddFile = () => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
     setEditingFile(null);
     setShowFileForm(true);
+  };
+
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    if (!user) {
+      setShowLoginForm(true);
+      return;
+    }
+    await deleteFile(fileId, fileName);
   };
 
   const handleFormSuccess = () => {
     loadFiles();
   };
+
+  // Fechar modal de login quando usuário fizer login
+  useEffect(() => {
+    if (user && showLoginForm) {
+      setShowLoginForm(false);
+    }
+  }, [user, showLoginForm]);
 
   if (loading) {
     return (
@@ -57,17 +81,20 @@ const ArquivosContent = () => {
         <ArquivosHeader
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          isAuthenticated={isAuthenticated}
-          currentUser={currentUser}
           onAddFile={handleAddFile}
-          onUserManagement={() => setShowUserManagement(true)}
-          onLogin={() => setShowLogin(true)}
-          onLogout={logout}
+          onLogin={() => setShowLoginForm(true)}
         />
+
+        {/* Admin Panel - só aparece quando logado */}
+        {user && (
+          <div className="mb-6">
+            <AdminPanel />
+          </div>
+        )}
 
         {/* Tabs for File Categories */}
         <Tabs defaultValue="thermal" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
             <TabsTrigger value="thermal" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
               <span className="hidden sm:inline">Drivers Impressoras Térmicas</span>
               <span className="sm:hidden">Térmicas</span>
@@ -76,13 +103,17 @@ const ArquivosContent = () => {
               <span className="hidden sm:inline">Drivers Impressoras Multifuncionais</span>
               <span className="sm:hidden">Multifuncionais</span>
             </TabsTrigger>
+            <TabsTrigger value="diagnostic" className="text-xs sm:text-sm px-2 sm:px-4 py-2 sm:py-3">
+              <span className="hidden sm:inline">Software de Diagnóstico</span>
+              <span className="sm:hidden">Diagnóstico</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="thermal" className="space-y-4">
             <FilesList 
               files={filteredThermalFiles} 
               title="Drivers para Impressoras Térmicas"
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={!!user}
               onEditFile={handleEditFile}
               onDeleteFile={handleDeleteFile}
               searchTerm={searchTerm}
@@ -93,20 +124,24 @@ const ArquivosContent = () => {
             <FilesList 
               files={filteredMultifunctionFiles} 
               title="Drivers para Impressoras Multifuncionais"
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={!!user}
+              onEditFile={handleEditFile}
+              onDeleteFile={handleDeleteFile}
+              searchTerm={searchTerm}
+            />
+          </TabsContent>
+          
+          <TabsContent value="diagnostic" className="space-y-4">
+            <FilesList 
+              files={filteredDiagnosticFiles} 
+              title="Software de Diagnóstico"
+              isAuthenticated={!!user}
               onEditFile={handleEditFile}
               onDeleteFile={handleDeleteFile}
               searchTerm={searchTerm}
             />
           </TabsContent>
         </Tabs>
-
-        {/* Login Dialog */}
-        <Dialog open={showLogin} onOpenChange={setShowLogin}>
-          <DialogContent className="max-w-sm sm:max-w-md mx-4">
-            <LoginForm onClose={() => setShowLogin(false)} />
-          </DialogContent>
-        </Dialog>
 
         {/* File Form Dialog */}
         <Dialog open={showFileForm} onOpenChange={setShowFileForm}>
@@ -119,28 +154,16 @@ const ArquivosContent = () => {
           </DialogContent>
         </Dialog>
 
-        {/* User Management Dialog - Apenas para admin */}
-        {currentUser === 'admin' && (
-          <Dialog open={showUserManagement} onOpenChange={setShowUserManagement}>
-            <DialogContent className="max-w-sm sm:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-              <UserManagement 
-                open={showUserManagement}
-                onClose={() => setShowUserManagement(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
+        {/* Login Form Dialog */}
+        <Dialog open={showLoginForm} onOpenChange={setShowLoginForm}>
+          <DialogContent className="max-w-sm sm:max-w-md mx-4">
+            <SecureLoginForm />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
 };
 
-const Arquivos = () => {
-  return (
-    <AuthProvider>
-      <ArquivosContent />
-    </AuthProvider>
-  );
-};
 
 export default Arquivos;
