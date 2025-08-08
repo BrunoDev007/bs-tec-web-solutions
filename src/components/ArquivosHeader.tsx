@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, Plus, Settings, LogOut } from 'lucide-react';
+import { Search, Plus, Settings, LogOut, FilePlus, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ArquivosHeaderProps {
