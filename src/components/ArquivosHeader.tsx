@@ -1,21 +1,28 @@
 
 import React from 'react';
-import { Search, Plus, LogIn, LogOut } from 'lucide-react';
+import { Search, Plus, LogIn, LogOut, KeyRound, Users, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface ArquivosHeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onAddFile: () => void;
   onLogin: () => void;
+  onChangePassword: () => void;
+  onManageUsers: () => void;
+  onCreateUser: () => void;
 }
 
 const ArquivosHeader = ({
   searchTerm,
   onSearchChange,
   onAddFile,
-  onLogin
+  onLogin,
+  onChangePassword,
+  onManageUsers,
+  onCreateUser,
 }: ArquivosHeaderProps) => {
   const { user, signOut } = useSecureAuth();
   return (
@@ -39,6 +46,27 @@ const ArquivosHeader = ({
                 <span className="hidden sm:inline">Adicionar Arquivo</span>
                 <span className="sm:hidden">Adicionar</span>
               </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center justify-center gap-2 text-sm">
+                    <span className="hidden sm:inline">Painel Admin</span>
+                    <span className="sm:hidden">Admin</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="z-50 w-56 bg-popover">
+                  <DropdownMenuItem onClick={onChangePassword} className="gap-2">
+                    <KeyRound className="h-4 w-4" /> Alterar Senha
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onManageUsers} className="gap-2">
+                    <Users className="h-4 w-4" /> Gerenciar Usuários
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onCreateUser} className="gap-2">
+                    <UserPlus className="h-4 w-4" /> Cadastrar Novo Usuário
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button 
                 variant="outline" 
                 onClick={signOut} 

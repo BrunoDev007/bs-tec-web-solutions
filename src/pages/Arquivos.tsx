@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import SecureLoginForm from '@/components/auth/SecureLoginForm';
-import AdminPanel from '@/components/admin/AdminPanel';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
+import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
+import CreateUserForm from '@/components/admin/CreateUserForm';
+import UserManagement from '@/components/admin/UserManagement';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import FileForm from '@/components/FileForm';
 import ArquivosHeader from '@/components/ArquivosHeader';
@@ -15,6 +17,7 @@ const Arquivos = () => {
   const [showFileForm, setShowFileForm] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
   const [editingFile, setEditingFile] = useState(null);
+  const [activeAdminForm, setActiveAdminForm] = useState<'password' | 'user' | 'management' | null>(null);
   
   const { user } = useSecureAuth();
   const { files, loading, loadFiles, handleDeleteFile: deleteFile, filterFiles } = useFileManagement();
@@ -83,12 +86,25 @@ const Arquivos = () => {
           onSearchChange={setSearchTerm}
           onAddFile={handleAddFile}
           onLogin={() => setShowLoginForm(true)}
+          onChangePassword={() => setActiveAdminForm('password')}
+          onManageUsers={() => setActiveAdminForm('management')}
+          onCreateUser={() => setActiveAdminForm('user')}
         />
 
-        {/* Admin Panel - só aparece quando logado */}
-        {user && (
+        {/* Admin Forms from submenu */}
+        {user && activeAdminForm === 'password' && (
           <div className="mb-6">
-            <AdminPanel />
+            <ChangePasswordForm onBack={() => setActiveAdminForm(null)} />
+          </div>
+        )}
+        {user && activeAdminForm === 'user' && (
+          <div className="mb-6">
+            <CreateUserForm onBack={() => setActiveAdminForm(null)} />
+          </div>
+        )}
+        {user && activeAdminForm === 'management' && (
+          <div className="mb-6">
+            <UserManagement onBack={() => setActiveAdminForm(null)} />
           </div>
         )}
 
