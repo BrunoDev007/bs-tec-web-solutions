@@ -31,14 +31,9 @@ serve(async (req) => {
       );
     }
 
-    // Simple authorization: only the main admin can create users
-    const allowedAdmins = ["admin@sistema.com"]; // ajuste se necessário
-    if (!allowedAdmins.includes(caller.email ?? "")) {
-      return new Response(
-        JSON.stringify({ success: false, message: "User not allowed" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // Authorization: allow any authenticated user to create users
+    // If you need to restrict, configure a list of allowed admin emails via secrets later.
+
 
     const { email, password } = await req.json();
     if (!email || !password) {

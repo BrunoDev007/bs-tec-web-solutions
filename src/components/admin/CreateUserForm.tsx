@@ -49,7 +49,17 @@ const CreateUserForm = ({ onBack }: CreateUserFormProps) => {
       });
 
       if (error) {
-        toast.error(error.message || 'Erro ao criar usuário');
+        let msg = error.message || 'Erro ao criar usuário';
+        try {
+          const httpErr: any = error as any;
+          const resp = httpErr?.context?.response;
+          if (resp) {
+            const cloned = resp.clone?.() ?? resp;
+            const payload = await cloned.json();
+            if (payload?.message) msg = payload.message;
+          }
+        } catch {}
+        toast.error(msg);
       } else if (data?.success) {
         toast.success('Usuário criado com sucesso!');
         setFormData({ email: '', password: '', confirmPassword: '' });
