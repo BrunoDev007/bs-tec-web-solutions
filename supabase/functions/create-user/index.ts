@@ -16,15 +16,13 @@ serve(async (req) => {
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-    // Authenticated client to identify the caller
-    const supabaseUser = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } },
-    });
+    // Get caller from the Authorization JWT
+    const authHeader = req.headers.get("Authorization") || "";
+    const token = authHeader.replace("Bearer ", "").trim();
 
-    const {
-      data: { user: caller },
-      error: callerError,
-    } = await supabaseUser.auth.getUser();
+    const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data: userData, error: callerError } = await supabaseAuth.auth.getUser(token);
+    const caller = userData?.user || null;
 
     if (callerError || !caller) {
       return new Response(
