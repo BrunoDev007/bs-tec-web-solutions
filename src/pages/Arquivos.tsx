@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import SecureLoginForm from '@/components/auth/SecureLoginForm';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
 import ChangePasswordForm from '@/components/admin/ChangePasswordForm';
@@ -162,6 +162,8 @@ const Arquivos = () => {
         {/* File Form Dialog */}
         <Dialog open={showFileForm} onOpenChange={setShowFileForm}>
           <DialogContent className="max-w-sm sm:max-w-md mx-4">
+            <DialogTitle>Gerenciar Arquivo</DialogTitle>
+            <DialogDescription>Adicione ou edite informações do arquivo.</DialogDescription>
             <FileForm 
               file={editingFile}
               onClose={() => setShowFileForm(false)}
@@ -173,6 +175,8 @@ const Arquivos = () => {
         {/* Login Form Dialog */}
         <Dialog open={showLoginForm} onOpenChange={setShowLoginForm}>
           <DialogContent className="max-w-sm sm:max-w-md mx-4">
+            <DialogTitle>Acessar</DialogTitle>
+            <DialogDescription>Entre para gerenciar os arquivos.</DialogDescription>
             <SecureLoginForm />
           </DialogContent>
         </Dialog>

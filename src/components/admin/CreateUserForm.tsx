@@ -41,18 +41,21 @@ const CreateUserForm = ({ onBack }: CreateUserFormProps) => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.admin.createUser({
-        email: formData.email,
-        password: formData.password,
-        email_confirm: true
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          email: formData.email,
+          password: formData.password,
+        },
       });
 
       if (error) {
-        toast.error(error.message);
-      } else {
+        toast.error(error.message || 'Erro ao criar usuário');
+      } else if (data?.success) {
         toast.success('Usuário criado com sucesso!');
         setFormData({ email: '', password: '', confirmPassword: '' });
         onBack();
+      } else {
+        toast.error(data?.message || 'Erro ao criar usuário');
       }
     } catch (error) {
       console.error('Erro ao criar usuário:', error);
