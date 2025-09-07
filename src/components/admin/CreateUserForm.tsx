@@ -41,7 +41,16 @@ const CreateUserForm = ({ onBack }: CreateUserFormProps) => {
 
     setLoading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      if (!session) {
+        toast.error('Você precisa estar autenticado.');
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-user', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
         body: {
           email: formData.email,
           password: formData.password,

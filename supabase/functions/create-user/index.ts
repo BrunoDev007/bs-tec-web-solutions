@@ -16,6 +16,12 @@ serve(async (req) => {
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Missing Supabase secrets. Configure SUPABASE_URL, SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     // Get caller from the Authorization JWT
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace("Bearer ", "").trim();
@@ -25,6 +31,7 @@ serve(async (req) => {
     const caller = userData?.user || null;
 
     if (callerError || !caller) {
+      console.error("Auth error or no caller:", callerError);
       return new Response(
         JSON.stringify({ success: false, message: "Not authenticated" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -53,6 +60,7 @@ serve(async (req) => {
     });
 
     if (error) {
+      console.error("admin.createUser error:", error);
       return new Response(
         JSON.stringify({ success: false, message: error.message }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -64,6 +72,7 @@ serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
+    console.error("create-user error:", err);
     return new Response(
       JSON.stringify({ success: false, message: (err as Error).message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
